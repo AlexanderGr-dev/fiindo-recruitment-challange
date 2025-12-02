@@ -10,14 +10,6 @@ Create a data processing application that:
 - Saves results to a SQLite database
 - Demonstrates proficiency in API integration, data manipulation, and database operations
 
-## Skills Tested
-
-- **API Integration**: Working with REST APIs and handling responses
-- **Data Processing**: Cleaning, transforming, and aggregating data
-- **ORM/Database**: SQLite database design and operations
-- **Debugging**: Troubleshooting API calls and data processing logic
-- **Code Quality**: Clean, maintainable, and well-documented code
-
 ## Technical Requirements
 
 ### Input
@@ -33,7 +25,7 @@ Create a data processing application that:
 
 ### 1. Data Collection
 - Connect to the Fiindo API
-- Authenticate using your identifier
+- Authenticate using your identifier `Auhtorization: Bearer {first_name}.{last_name}`
 - Fetch financial data for multiple stock tickers
 
 ### 2. Data Calculations
@@ -72,15 +64,6 @@ Your completed solution should include:
 - SQLite database with calculated results
 - Clean, documented code
 - README with setup and run instructions
-
-## Evaluation Criteria
-
-- **Functionality**: Application works correctly and produces expected results
-- **Code Quality**: Clean, readable, and well-organized code
-- **Data Accuracy**: Calculations are mathematically correct
-- **Error Handling**: Proper handling of API errors and edge cases
-- **Database Design**: Appropriate schema and data relationships
-- **Documentation**: Clear setup and usage instructions
 
 ## API Documentation
 
