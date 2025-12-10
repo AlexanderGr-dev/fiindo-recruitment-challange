@@ -1,1 +1,80 @@
-__pycache__
+# Byte-compiled / optimized / dependency files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+pip-wheel-metadata/
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+env.bak/
+.virtualenv/
+
+# Editor/IDE
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# OS generated files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Python test & coverage
+.coverage
+.coverage.*
+htmlcov/
+.pytest_cache/
+nosetests.xml
+coverage.xml
+
+# Type checkers
+.mypy_cache/
+.pyright/
+
+# Logs and runtime files
+*.log
+logs/
+*.pid
+*.sock
+
+# dotenv / credentials
+.env
+.env.local
+.env.*.local
+secrets.env
+
+# Database files
+*.sqlite3
+*.db
+
+# Jupyter
+.ipynb_checkpoints/
+
+# C extensions
+*.so
+*.pyd
+
+# Compiled python files
+*.pyc
+
+# PEP 582; used by some packaging tools
+__pypackages__/
+
+# Misc
+*.bak
+*.swp
+
+# Node (if present)
+node_modules/
+
+# Coverage reports
+coverage-report/
