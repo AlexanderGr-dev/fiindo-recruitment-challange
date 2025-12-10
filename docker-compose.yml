@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    image: fiindo-etl:latest
+    container_name: fiindo-app
+    environment:
+      - PYTHONUNBUFFERED=1
+    command: ["python", "-m", "src.main"]
+    # Mount the project for quick dev iteration (optional). Remove volumes for immutable production image.
+    volumes:
+      - ./:/app
+
+  tests:
+    build: .
+    image: fiindo-etl:test
+    container_name: fiindo-tests
+    environment:
+      - PYTHONUNBUFFERED=1
+    depends_on:
+      - app
+    # Run tests by default when running this service via `docker-compose run tests`
+    command: ["pytest", "-q"]
+    volumes:
+      - ./:/app

@@ -1,0 +1,16 @@
+__pycache__/
+.pytest_cache/
+.venv/
+venv/
+build/
+dist/
+*.egg-info/
+.git/
+.gitignore
+.env
+*.pyc
+*.pyo
+*.pyd
+*.db
+node_modules/
+docker-compose.override.yml
