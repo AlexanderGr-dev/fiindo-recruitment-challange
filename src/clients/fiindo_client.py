@@ -1,6 +1,6 @@
 import logging
 import requests
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, Set
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
@@ -15,6 +15,13 @@ class FiindoClientError(Exception):
 
 
 class FiindoClient:
+
+    VALID_STATEMENTS: Set[str] = {
+        "income_statement",
+        "balance_sheet_statement",
+        "cash_flow_statement",
+    }
+    
     def __init__(
         self,
         base_url: str = settings.FIINDO_API_BASE,
@@ -120,7 +127,7 @@ class FiindoClient:
         path = f"/api/v1/eod/{symbol}"
         data = self._get(path)
 
-        if not isinstance(data, list):
+        if not isinstance(data, dict):
             logger.error("Invalid EOD response for symbol=%s", symbol)
             raise FiindoClientError("Invalid EOD response format")
 
