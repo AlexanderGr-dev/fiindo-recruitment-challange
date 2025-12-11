@@ -4,3 +4,5 @@ pydantic
 pydantic_settings
 requests
 logging
+pytest
+pytest-mock

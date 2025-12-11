@@ -1,3 +1,5 @@
+"""HTTP client for communicating with the Fiindo API."""
+
 import logging
 import requests
 from typing import List, Dict, Any, Optional, Set
@@ -29,6 +31,15 @@ class FiindoClient:
         timeout: int = settings.HTTP_TIMEOUT,
         retries: int = settings.HTTP_RETRIES,
     ):
+        """Create a `FiindoClient`.
+
+        Args:
+            base_url: Base URL for the Fiindo API (no trailing slash required).
+            auth_identifier: Identifier used in the `Authorization` header
+                (format: `{first_name}.{last_name}`).
+            timeout: Per-request timeout in seconds.
+            retries: Number of retry attempts for transient HTTP errors.
+        """
         self.base_url = base_url.rstrip("/")
         self.timeout = timeout
 
@@ -46,13 +57,18 @@ class FiindoClient:
             raise_on_status=False,
         )
 
-        adapter = HTTPAdapter(max_retries=retry_strategy)
+        adapter = HTTPAdapter(
+            max_retries=retry_strategy,
+            pool_connections=15, 
+            pool_maxsize=15      
+        )
         self.session.mount("https://", adapter)
         self.session.mount("http://", adapter)
 
 
     def _get(self, path: str, params: Optional[dict] = None) -> Any:
         url = f"{self.base_url}{path}"
+        """Perform a GET request and return parsed JSON."""
 
         logger.debug("GET %s | params=%s", url, params)
 
@@ -71,7 +87,7 @@ class FiindoClient:
             raise FiindoClientError(
                 f"Fiindo API error {response.status_code}: {response.text}"
             )
-        
+
         logger.debug("Response received (%s)", response.status_code)
 
         try:
@@ -82,6 +98,12 @@ class FiindoClient:
 
 
     def get_symbols(self) -> List[str]:
+        """Return the list of symbols available from the Fiindo API.
+
+        Validates the response structure and raises `FiindoClientError` for
+        unexpected formats.
+        """
+
         logger.info("Fetching symbols from Fiindo API")
 
         data = self._get("/api/v1/symbols")
@@ -103,9 +125,10 @@ class FiindoClient:
         return symbols
     
     def get_general(self, symbol: str) -> Dict[str, Any]:
-        """
-        Fetch general information for a stock symbol.
-        Validates symbol format and returns parsed info.
+        """Fetch and return general information for `symbol`.
+
+        The returned value is expected to be a dictionary matching the API
+        shape; callers should validate deeper fields as needed.
         """
         logger.debug("Fetching general info for symbol=%s", symbol)
 
@@ -119,8 +142,10 @@ class FiindoClient:
         return data
     
     def get_eod(self, symbol: str) -> List[Dict[str, Any]]:
-        """
-        Fetch end-of-day (EOD) stock price data for a symbol.
+        """Fetch end-of-day (EOD) price data for `symbol`.
+
+        Returns the raw parsed JSON from the API; callers should validate
+        the expected keys (e.g., `stockprice`).
         """
         logger.debug("Fetching EOD data for symbol=%s", symbol)
 
@@ -134,12 +159,15 @@ class FiindoClient:
         return data
     
     def get_financials(self, symbol: str, statement: str) -> Dict[str, Any]:
-        """
-        Fetch financial statements for a symbol.
-        Statement must be one of:
-        - income_statement
-        - balance_sheet_statement
-        - cash_flow_statement
+        """Fetch a financial statement for `symbol`.
+
+        Args:
+            symbol: Ticker symbol to fetch financials for.
+            statement: One of the values in `FiindoClient.VALID_STATEMENTS`.
+
+        Returns the parsed JSON dictionary for the requested statement.
+        Raises `ValueError` for invalid `statement` values and
+        `FiindoClientError` for invalid API responses.
         """
         if statement not in self.VALID_STATEMENTS:
             raise ValueError(

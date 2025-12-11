@@ -1,3 +1,4 @@
+from typing import Annotated
 from pydantic import Field, ConfigDict
 from pydantic_settings import BaseSettings
 
@@ -15,16 +16,13 @@ class Settings(BaseSettings):
         description="Fiindo auth identifier: first.last",
     )
 
-    ETL_MAX_WORKERS: int = Field(
-        default=15,
-        max_value=20,
-        description="Max number of parallel workers for ETL-Service", )
+    ETL_MAX_WORKERS: Annotated[int, Field(le=10, ge=1)] = 8
 
     LOG_LEVEL: str = Field(default="INFO")
 
     # HTTP
     HTTP_TIMEOUT: int = Field(default=10)
-    HTTP_RETRIES: int = Field(default=3)
+    HTTP_RETRIES: int = Field(default=3,ge=2)
 
     # Database
     DATABASE_URL: str = Field(

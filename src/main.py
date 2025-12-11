@@ -1,7 +1,7 @@
 import logging
 from src.models.base import init_db, SessionLocal
 from src.clients.fiindo_client import FiindoClient
-from services.etl import ETLService
+from src.services.etl import ETLService
 from src.core.config import settings
 
 from src.core.logging import setup_logging  
