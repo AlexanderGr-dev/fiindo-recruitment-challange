@@ -1,83 +1,127 @@
 # Fiindo Recruitment Challenge
 
-This repository contains a coding challenge for fiindo candidates. Candidates should fork this repository and implement their solution based on the requirements below.
+A Python ETL-style project that fetches financial data from a Fiindo API, processes it
+(calculations, aggregations), and persists results in a local SQLite database.  
+The project emphasizes clean architecture, testability, and separation of concerns.
 
-## Challenge Overview
+---
 
-Create a data processing application that:
-- Fetches financial data from an API
-- Performs calculations on stock ticker data
-- Saves results to a SQLite database
+## Project Structure
+```
+fiindo-recruitment-challange/
+├─ src/ # Application source code
+│ ├─ clients/ # API client implementations
+│ ├─ services/ # ETL orchestration & calculations
+│ ├─ repositories/ # Database repository interfaces
+│ ├─ models/ # SQLAlchemy domain models
+│ ├─ schemas/ # Pydantic schemas for API response parsing
+│ └─ core/ # Configuration and shared utilities
+├─ tests/unit/ # Unit tests 
+├─ requirements.txt # Python dependencies
+├─ example.env # Example environment variables
+├─ Dockerfile # Optional container configuration
+└─ docker-compose.yml # Optional container orchestration
+```
 
-## Technical Requirements
+## Requirements
+- Python 3.10 (project was developed & tested against 3.10)
+- Git
+- (Optional) Docker + Docker Compose
 
-### Input
-- **API Endpoint**: `https://api.test.fiindo.com` (docs: `https://api.test.fiindo.com/api/v1/docs/`)
-- **Authentication**: Use header `Auhtorization: Bearer {first_name}.{last_name}` with every request. Anything else WILL BE IGNORED. No other format or value will be accepted.
-- **Template**: This forked repository as starting point
+## Quick start 
 
-### Output
-- **Database**: SQLite database with processed financial data
-- **Tables**: Individual ticker statistics and industry aggregations
+1. Clone the repository
 
-## Process Steps
+```powershell
+git clone https://github.com/AlexanderGr-dev/fiindo-recruitment-challange.git
+cd fiindo-recruitment-challange
+```
 
-### 1. Data Collection
-- Connect to the Fiindo API
-- Authenticate using your identifier `Auhtorization: Bearer {first_name}.{last_name}`
-- Fetch financial data
+2. Create a virtual environment and activate it
 
-### 2. Data Calculations
+Windows PowerShell
+```powershell
+python -m venv .venv
+& .venv\Scripts\Activate
+```
+Linux / macOS
+```powershell
+python3 -m venv .venv
+source .venv/bin/activate
+```
 
-Calculate data for symbols only from those 3 industries:
-  - `Banks - Diversified`
-  - `Software - Application`
-  - `Consumer Electronics`
+3. Install dependencies
 
-#### Per Ticker Statistics
-- **PE Ratio**: Price-to-Earnings ratio calculation from last quarter
-- **Revenue Growth**: Quarter-over-quarter revenue growth (Q-1 vs Q-2)
-- **NetIncomeTTM**: Trailing twelve months net income
-- **DebtRatio**: Debt-to-equity ratio from last year
+```powershell
+python -m pip install -r requirements.txt
+```
 
-#### Industry Aggregation
-- **Average PE Ratio**: Mean PE ratio across all tickers in each industry
-- **Average Revenue Growth**: Mean revenue growth across all tickers in each industry
-- **Sum of Revenue**: Sum revenue across all tickers in each industry
+4. Provide environment variables
 
-### 3. Data Storage
-- Design appropriate database schema
-- Save individual ticker statistics
-- Save aggregated industry data
+Edit .env to provide API credentials, DB path, etc.:
 
-## Database Setup
+```powershell
+cp example.env .env
+```
 
-### Database Files
-- `fiindo_challenge.db`: SQLite database file
-- `models.py`: SQLAlchemy model definitions (can be divided into separate files if needed)
-- `alembic/`: Database migration management
+5. Run the application
 
-## Getting Started
+The application entry point is `src.main`. You can run it with:
 
-1. **Fork this repository** to your GitHub account
-3. **Implement the solution** following the process steps outlined above 
+```powershell
+python -m src.main
+```
 
-## Deliverables
+## Tests
 
-Your completed solution should include:
-- Working application that fetches data from the API
-- SQLite database with calculated results
-- Clean, documented code
-- README with setup and run instructions
+Run unit tests with pytest using the virtual environment Python:
 
-## Bonus Points
+```powershell
+pytest
+```
 
-### Dockerization
-- Containerize your solution using Docker
-- Create a `Dockerfile` and `docker-compose.yml`
+- Unit tests live under `tests/unit/` and mock external I/O (HTTP, DB).
 
-### Unit Testing
-- Write comprehensive unit tests for ETL part your solution
+## Docker 
 
+There is a `Dockerfile` and `docker-compose.yml` for containerized runs. Basic commands:
 
-Good luck with your implementation!
+```powershell
+# Build images
+docker-compose build
+
+# Run application service
+docker-compose up app
+
+# Or run tests in the tests service (if defined)
+docker-compose run --rm tests
+```
+
+Notes and common issues:
+- Ensure Docker Desktop / the Docker daemon is running before using `docker-compose`.
+- When running with SQLite and bind-mounted repos, avoid mounting the app directory read-only, otherwise SQLite will fail with "attempt to write a readonly database". Use a named volume or ensure read-write mounts for database files.
+
+## Configuration
+
+The project reads configuration via `src/core/config.py` and an `.env` file. Key settings include:
+
+- `DATABASE_URL` — defaults to a local SQLite file in the project
+- `FIINDO_API_BASE` — base URL for the Fiindo API
+- `FIINDO_AUTH` — bearer access token
+- `ETL_MAX_WORKERS` — concurrency degree used by ETL (ThreadPoolExecutor)
+
+Edit `example.env` and copy to `.env` to override development defaults.
+
+## Next Improvements (suggestions)
+
+- Implement token-bucket rate limiter for parallel API calls
+- Add integration tests for real API scenarios
+- Introduce CI/CD workflow with automated tests
+- Use a small SQLite named volume in Docker Compose for persistence that is writable by the container.
+
+## Contact Information / Author
+If you have any questions about the project or the architecture, please do not hesitate to contact me.
+
+- **Name:** Alexander Griesbeck
+- **E-Mail:** alex.griesbeck@gmx.de
+- **LinkedIn:** www.linkedin.com/in/alexander-griesbeck-3108a91b6
